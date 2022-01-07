@@ -36,7 +36,7 @@ For more info, see <https://developers.google.com/sheets/api/quickstart/python>.
 This file is generated once you authenticate the bot through OAuth2.
 
 ## To-dos
-[ ] Track last seen message
-[ ] Implement catch-up processing of messages not seen before
-[ ] Digit recognition for BT/LONG/VOL breakdown
-[ ] Explain how to create `credentials.json`.
+- [ ] Track last seen message
+- [ ] Implement catch-up processing of messages not seen before
+- [ ] Digit recognition for BT/LONG/VOL breakdown
+- [ ] Explain how to create `credentials.json`.
