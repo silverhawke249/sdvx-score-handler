@@ -13,7 +13,7 @@ The following files are required but not included for privacy reasons:
 - credentials.json
 - token.json
 
-### .env file
+### .env
 The following variables are required:
 - DISCORD_TOKEN
   - Needed to log in as bot user
