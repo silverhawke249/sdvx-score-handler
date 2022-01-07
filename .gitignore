@@ -1,0 +1,6 @@
+# exclude google credential files
+credentials.json
+token.json
+
+# exclude environment variables
+.env
