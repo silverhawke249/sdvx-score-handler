@@ -39,4 +39,5 @@ This file is generated once you authenticate the bot through OAuth2.
 - [ ] Track last seen message
 - [ ] Implement catch-up processing of messages not seen before
 - [ ] Digit recognition for BT/LONG/VOL breakdown
-- [ ] Explain how to create `credentials.json`.
+- [ ] ~~Explain how to create `credentials.json`~~
+- [ ] Migrate out of Google Sheets (this obsoletes the previous to-do)
