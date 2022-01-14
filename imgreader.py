@@ -1,6 +1,8 @@
 import cv2
+import discord
 import io
 import numpy as np
+import typing
 
 # Result screen template
 template = cv2.imread('imgs/template.png')
@@ -21,7 +23,7 @@ match_threshold = 75
 lowe_threshold = 0.7
 
 
-async def get_image(msg):
+async def get_image(msg: discord.Message) -> None | np.ndarray:
     in_img = None
     if msg.attachments:
         for attach_img in msg.attachments:
@@ -34,8 +36,8 @@ async def get_image(msg):
         return
 
     # Resize image to reasonable dimensions
+    # Doing this apparently removes induced Moire patterns? idk
     while in_img.shape[1] > 2400:
-        # Doing this apparently removes induced Moire patterns? idk
         in_img = cv2.resize(in_img, (0, 0), fx=0.5, fy=0.5, interpolation=cv2.INTER_LANCZOS4)
     in_img = cv2.resize(in_img, (0, 0), fx=1200/in_img.shape[1],
                         fy=1200/in_img.shape[1], interpolation=cv2.INTER_LANCZOS4)
@@ -43,7 +45,7 @@ async def get_image(msg):
     return in_img
 
 
-async def unwarp_image(in_img):
+async def unwarp_image(in_img: np.ndarray) -> None | np.ndarray:
     key, desc = sift.detectAndCompute(cv2.cvtColor(in_img, cv2.COLOR_BGR2GRAY), None)
 
     # Match features with the desired matcher
@@ -67,7 +69,7 @@ async def unwarp_image(in_img):
     return out_img
 
 
-async def crop_image(out_img):
+async def crop_image(out_img: np.ndarray) -> np.ndarray:
     # Image output specification:
     # dimensions: 475 x 295
     # jacket resized to 115 x 115
@@ -95,7 +97,7 @@ async def crop_image(out_img):
     return img
 
 
-async def read_score(img):
+async def read_score(img: np.ndarray) -> int:
     # Image prepping
     score = img[25:94, :]
     score_bw = cv2.resize(score, (475, 69))
@@ -126,22 +128,29 @@ async def read_score(img):
     return score_val
 
 
-async def message_to_image(msg):
-    # print('Loading image...')
+async def read_chains(img: np.ndarray) -> typing.Tuple[int, int, int]:
+    # TODO: implement this
+    return None, None, None
+
+
+async def message_to_image(msg: discord.Message) -> dict:
     in_img = await get_image(msg)
     if in_img is None:
-        return -1
+        return {'status': 'error', 'msg': 'No image found.'}
 
-    # print('Transforming image...')
     out_img = await unwarp_image(in_img)
     if out_img is None:
-        return
+        return {'status': 'error', 'msg': 'Cannot find score region in image.'}
 
-    # print('Reading image...')
     final_img = await crop_image(out_img)
     score = await read_score(final_img)
+    totals = await read_chains(final_img)
+
     # Encode image to a bytes sequence, and then put it in
     # BytesIO so that it plays nice with discord.File
     _, out_buffer = cv2.imencode('.png', final_img)
     out_buffer = io.BytesIO(out_buffer)
-    return out_buffer, score
+    return {'status': 'ok',
+            'img': out_buffer,
+            'score': score,
+            'totals': totals}
