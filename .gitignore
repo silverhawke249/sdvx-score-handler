@@ -1,6 +1,5 @@
-# exclude google credential files
-credentials.json
-token.json
+# exclude compiled stuff
+__pycache__/
 
 # exclude environment variables
 .env
